@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 const moment = require('moment');
 
 // Function to read the last two rows of a CSV file, format specific columns, and filter by date range
-function readFormatAndFilterByDateRange(filePath, startDate) {
+function readFormatAndFilterByDateRange(filePath, Date) {
     const formattedRows = [];
 
     return new Promise((resolve, reject) => {
@@ -17,7 +17,7 @@ function readFormatAndFilterByDateRange(filePath, startDate) {
                 };
 
                 if (formattedRow.Date !== undefined &&
-                    moment(formattedRow.Date, 'YYYY-MM-DD HH:mm:ss').isSame(startDate, null, '[]')) {
+                    moment(formattedRow.Date, 'YYYY-MM-DD HH:mm:ss').isSame(Date, null, '[]')) {
                     formattedRows.push(formattedRow);
 
                 }
@@ -32,14 +32,14 @@ function readFormatAndFilterByDateRange(filePath, startDate) {
 }
 
 // Set your desired date range
-const startDate = moment('2023-11-22 1:45:00', 'YYYY-MM-DD HH:mm:ss');
+const Date = moment('2023-11-22 1:45:00', 'YYYY-MM-DD HH:mm:ss');
 
 
 // File path to your CSV file
 const filePath = '213213219-LP 01.xls';
 
 // Call the function to read the last two rows, format specific columns, and filter by date range
-readFormatAndFilterByDateRange(filePath, startDate)
+readFormatAndFilterByDateRange(filePath, Date)
     .then((filteredRows) => {
         // Output the formatted and filtered result
         console.log('Formatted and Filtered Rows:', filteredRows);
