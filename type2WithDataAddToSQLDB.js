@@ -12,6 +12,30 @@ const pool = new Pool({
     port: 5432, 
 });
 
+// Function to insert extracted rows into PostgreSQL
+async function insertRowsIntoPostgres(extractedRows) {
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        for (const row of extractedRows) {
+            await client.query(`
+                INSERT INTO table1("Date", "exportDay", "exportPeak", "exportOffPeak", "importDay", "importPeak", "importOffPeak") 
+                VALUES($1, $2, $3, $4, $5, $6, $7)
+            `, [row.Date, row.exportDay, row.exportPeak, row.exportOffPeak, row.importDay, row.importPeak, row.importOffPeak]);
+        }
+
+        await client.query('COMMIT');
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+
 // Function to read the last two rows of a CSV file and extract specific columns
 function readAndExtractColumns(filePath) {
     const extractedRows = [];
@@ -45,28 +69,6 @@ function readAndExtractColumns(filePath) {
     });
 }
 
-// Function to insert extracted rows into PostgreSQL
-async function insertRowsIntoPostgres(extractedRows) {
-    const client = await pool.connect();
-
-    try {
-        await client.query('BEGIN');
-
-        for (const row of extractedRows) {
-            await client.query(`
-                INSERT INTO table1("Date", "exportDay", "exportPeak", "exportOffPeak", "importDay", "importPeak", "importOffPeak") 
-                VALUES($1, $2, $3, $4, $5, $6, $7)
-            `, [row.Date, row.exportDay, row.exportPeak, row.exportOffPeak, row.importDay, row.importPeak, row.importOffPeak]);
-        }
-
-        await client.query('COMMIT');
-    } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-    } finally {
-        client.release();
-    }
-}
 
 // File path to your CSV file
 const filePath = '213213227-BH.xls';
