@@ -45,7 +45,7 @@ async function insertRowsIntoDatabase(rows) {
   }
 }
 
-// Function to read, format, and filter rows from a CSV file
+// Function to read, format, and filter rows from a  CSV file
 function readFormatAndFilterByDateRange(filePath, startDate, endDate) {
   const formattedRows = [];
 
