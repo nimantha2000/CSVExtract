@@ -13,7 +13,7 @@ function readAndPrintSpecificRows(filePath, sheetName, startRow, endRow) {
 
 // File path to your Excel file
 const filePath = 'WP010903-TODEnergy.xls';
-const sheetName = 'WP010903-TODEnergy'; // Replace with your sheet name
+const sheetName = 'WP010903-TODEnergy'; 
 const startRow = 8;
 const endRow = 14;
 
