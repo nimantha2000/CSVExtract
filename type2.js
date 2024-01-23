@@ -1,55 +1,31 @@
+const xlsx = require('xlsx');
 const fs = require('fs');
-const csv = require('csv-parser');
-const moment = require('moment');
 
-// Function to read the last two rows of a CSV file and extract specific columns
-function readAndExtractColumns(filePath,Date) {
-    const extractedRows = [];
+// Replace 'your_file.xls' with the actual path to your Excel file
+const filePath = 'WP010903-TODEnergy.xls';
 
-    return new Promise((resolve, reject) => {
-        fs.createReadStream(filePath)
-            .pipe(csv({ separator: '\t' }))
-            .on('data', (row) => {
-                const extractedRow = {
-                    Date: moment(row['_1'], 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
-                    exportDay: Math.round(row['_3'] / 1000),
-                    exportPeak: Math.round(row['_4'] / 1000),
-                    exportOffPeak: Math.round(row['_5'] / 1000),
-                    importDay: Math.round(row['_7'] / 1000),
-                    importPeak: Math.round(row['_8'] / 1000),
-                    importOffPeak: Math.round(row['_9'] / 1000),
-                };
+// Read the Excel file with the 'cellDates' and 'dateNF' options
+const workbook = xlsx.readFile(filePath, { cellDates: true, dateNF: 'M/D/YYYY H:mm' });
 
-                if (extractedRow.Date !== undefined &&
-                    moment(extractedRow.Date, 'YYYY-MM-DD HH:mm:ss').isSame(Date, null, '[]')) {
-                        extractedRows.push(extractedRow);
+// Assuming there is only one sheet in the Excel file
+const sheetName = workbook.SheetNames[0];
+const sheet = workbook.Sheets[sheetName];
 
-                    if (extractedRows.length > 1) {
-                        extractedRows.shift(); // Keep only the last two formatted rows
-                    }
-                }
-            })
-            .on('end', () => {
-                resolve(extractedRows);
-            })
-            .on('error', (error) => {
-                reject(error);
-            });
+// Convert the sheet to an array of objects
+const data = xlsx.utils.sheet_to_json(sheet);
+
+// Print only specific columns (Column 1, 3, and 4) for rows 8, 9, and 10
+const rowsToPrint = [8, 9, 10];
+
+rowsToPrint.forEach((rowIndex) => {
+  const row = data[rowIndex - 1];
+  if (row) {
+    console.log(`Row ${rowIndex}:`, {
+      Column1: row['__EMPTY'],
+      Column3: row['__EMPTY_2'],
+      Column4: row['__EMPTY_3'],
     });
-}
-
-
-const Date = moment('2024-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
-
-// File path to your CSV file
-const filePath = '213213227-BH.xls';
-
-// Call the function to read the last two rows and extract specific columns
-readAndExtractColumns(filePath,Date)
-    .then((extractedRows) => {
-        // Output the extracted result
-        console.log('Extracted Columns from Last Two Rows:', extractedRows);
-    })
-    .catch((error) => {
-        console.error('Error reading and extracting columns:', error.message);
-    });
+  } else {
+    console.log(`Row ${rowIndex} not found.`);
+  }
+});

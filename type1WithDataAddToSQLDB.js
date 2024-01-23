@@ -18,7 +18,7 @@ client.connect();
 async function insertRowsIntoDatabase(rows) {
   const insertQueries = rows.map(row => {
     return {
-      text: `INSERT INTO table1s("Date", "DayEnergyExport", "PeakEnergyExport", "offPeakEnergyExport", "PeakEnaergyImport", "PeakEnaergyImport", "offPeakEnaergyImport") VALUES($1, $2, $3, $4, $5, $6, $7)`,
+      text: `INSERT INTO table1s("Date", "exportDay", "exportPeak", "exportOffPeak", "importDay", "importPeak", "importOffPeak") VALUES($1, $2, $3, $4, $5, $6, $7)`,
       values: [
         row.Date,
         row.DayEnergyExport,
@@ -98,7 +98,7 @@ function readFormatAndFilterByDateRange(filePath, Date) {
 const Date = moment('2024-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
 
 // File path to your CSV file
-const filePath = '213213227-BH.xls';
+const filePath = '213213219-BH.xls';
 
 // Call the function to read, format, and filter rows, and write to PostgreSQL
 readFormatAndFilterByDateRange(filePath, Date)
