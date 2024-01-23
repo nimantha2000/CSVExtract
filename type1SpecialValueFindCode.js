@@ -10,16 +10,20 @@ function readFormatAndFilterByDateRange(filePath, Date) {
         fs.createReadStream(filePath)
             .pipe(csv({ separator: '\t' }))
             .on('data', (row) => {
+                const rawValue = parseFloat(row['_2']);
+                const value = parseFloat((rawValue / 1000000).toFixed(3));
+                const importValue = Math.max(0, -value); // Import value (minimum is 0)
+                const exportValue = Math.max(0, value); // Export value (minimum is 0)
+
                 const formattedRow = {
                     Date: moment(row['_1'], 'MM/DD/YYYY HH:mm:ss', true).format('YYYY-MM-DD HH:mm:ss'),
-                    exportDay: Math.round(row['_2']),
-                    exportPeak: Math.round(row['_3'] ),
+                    importValue,
+                    exportValue,
                 };
 
                 if (formattedRow.Date !== undefined &&
                     moment(formattedRow.Date, 'YYYY-MM-DD HH:mm:ss').isSame(Date, null, '[]')) {
                     formattedRows.push(formattedRow);
-
                 }
             })
             .on('end', () => {
@@ -32,8 +36,7 @@ function readFormatAndFilterByDateRange(filePath, Date) {
 }
 
 // Set your desired date range
-const Date = moment('2023-11-22 1:45:00', 'YYYY-MM-DD HH:mm:ss');
-
+const Date = moment('2023-12-21 18:30:00', 'YYYY-MM-DD HH:mm:ss');
 
 // File path to your CSV file
 const filePath = '213213219-LP 01.xls';
@@ -42,7 +45,7 @@ const filePath = '213213219-LP 01.xls';
 readFormatAndFilterByDateRange(filePath, Date)
     .then((filteredRows) => {
         // Output the formatted and filtered result
-        console.log('Formatted and Filtered Rows:', filteredRows);
+        console.log('Filtered Rows:', filteredRows);
     })
     .catch((error) => {
         console.error('Error reading, formatting, and filtering rows:', error.message);

@@ -18,15 +18,15 @@ client.connect();
 async function insertRowsIntoDatabase(rows) {
   const insertQueries = rows.map(row => {
     return {
-      text: `INSERT INTO table1("Date", "exportDay", "exportPeak", "exportOffPeak", "importDay", "importPeak", "importOffPeak") VALUES($1, $2, $3, $4, $5, $6, $7)`,
+      text: `INSERT INTO table1s("Date", "DayEnergyExport", "PeakEnergyExport", "offPeakEnergyExport", "importDay", "importPeak", "importOffPeak") VALUES($1, $2, $3, $4, $5, $6, $7)`,
       values: [
         row.Date,
-        row.exportDay,
-        row.exportPeak,
-        row.exportOffPeak,
-        row.importDay,
-        row.importPeak,
-        row.importOffPeak,
+        row.DayEnergyExport,
+        row.PeakEnergyExport,
+        row.offPeakEnergyExport,
+        row.PeakEnaergyImport,
+        row.PeakEnaergyImport,
+        row.offPeakEnaergyImport,
       ],
     };
   });
@@ -46,31 +46,39 @@ async function insertRowsIntoDatabase(rows) {
 }
 
 // Function to read, format, and filter rows from a  CSV file
-function readFormatAndFilterByDateRange(filePath, startDate, endDate) {
+function readFormatAndFilterByDateRange(filePath, Date) {
   const formattedRows = [];
 
   return new Promise((resolve, reject) => {
     fs.createReadStream(filePath)
       .pipe(csv({ separator: '\t' }))
       .on('data', (row) => {
-        const formattedRow = {
-          Date: moment(row['_1'], 'MM/DD/YYYY HH:mm:ss', true).format('YYYY-MM-DD HH:mm:ss'),
-          exportDay: Math.round(row['_3'] / 1000),
-          exportPeak: Math.round(row['_4'] / 1000),
-          exportOffPeak: Math.round(row['_5'] / 1000),
-          importDay: Math.round(row['_7'] / 1000),
-          importPeak: Math.round(row['_8'] / 1000),
-          importOffPeak: Math.round(row['_9'] / 1000),
-        };
+        const dateFormats = ['MM/DD/YYYY HH:mm:ss', 'DD-MM-YYYY HH:mm:ss'];
+        let formattedRow = null; 
 
-        if (formattedRow.Date !== undefined &&
-          moment(formattedRow.Date, 'YYYY-MM-DD HH:mm:ss').isBetween(startDate, endDate, null, '[]')) {
-          formattedRows.push(formattedRow);
 
-          if (formattedRows.length > 2) {
-            formattedRows.shift(); // Keep only the last two formatted rows
+        for (const dateFormat of dateFormats) {
+          const parsedDate = moment(row['_1'], dateFormat, true);
+          if (parsedDate.isValid()) {
+              formattedRow = {
+                  Date: parsedDate.format('YYYY-MM-DD HH:mm:ss'),
+                  DayEnergyExport: Math.round(row['_3'] / 1000),
+                  PeakEnergyExport: Math.round(row['_4'] / 1000),
+                  offPeakEnergyExport: Math.round(row['_5'] / 1000),
+                  DayEnergyImport: Math.round(row['_7'] / 1000),
+                  PeakEnergyImport: Math.round(row['_8'] / 1000),
+                  offPeakEnergyImport: Math.round(row['_9'] / 1000),
+              };
+              break;
+            }
           }
-        }
+
+          if (formattedRow !== null && moment(formattedRow.Date).isSame(Date, 'minute')) {
+            formattedRows.push(formattedRow);
+            if (formattedRows.length > 1) {
+                formattedRows.shift(); // Keep only the last two formatted rows
+            }
+          }
       })
       .on('end', async () => {
         try {
@@ -87,14 +95,13 @@ function readFormatAndFilterByDateRange(filePath, startDate, endDate) {
 }
 
 // Set your desired date range
-const startDate = moment('2023-12-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
-const endDate = moment('2024-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
+const Date = moment('2024-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
 
 // File path to your CSV file
-const filePath = '213213219-BH.xls';
+const filePath = '213213227-BH.xls';
 
 // Call the function to read, format, and filter rows, and write to PostgreSQL
-readFormatAndFilterByDateRange(filePath, startDate, endDate)
+readFormatAndFilterByDateRange(filePath, Date)
   .then((filteredRows) => {
     // Output the formatted and filtered result
     console.log('Formatted and Filtered Rows:', filteredRows);

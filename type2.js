@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 const moment = require('moment');
 
 // Function to read the last two rows of a CSV file and extract specific columns
-function readAndExtractColumns(filePath) {
+function readAndExtractColumns(filePath,Date) {
     const extractedRows = [];
 
     return new Promise((resolve, reject) => {
@@ -20,10 +20,13 @@ function readAndExtractColumns(filePath) {
                     importOffPeak: Math.round(row['_9'] / 1000),
                 };
 
-                extractedRows.push(extractedRow);
+                if (extractedRow.Date !== undefined &&
+                    moment(extractedRow.Date, 'YYYY-MM-DD HH:mm:ss').isSame(Date, null, '[]')) {
+                        extractedRows.push(extractedRow);
 
-                if (extractedRows.length > 2) {
-                    extractedRows.shift(); // Keep only the last two extracted rows
+                    if (extractedRows.length > 1) {
+                        extractedRows.shift(); // Keep only the last two formatted rows
+                    }
                 }
             })
             .on('end', () => {
@@ -35,11 +38,14 @@ function readAndExtractColumns(filePath) {
     });
 }
 
+
+const Date = moment('2024-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
+
 // File path to your CSV file
 const filePath = '213213227-BH.xls';
 
 // Call the function to read the last two rows and extract specific columns
-readAndExtractColumns(filePath)
+readAndExtractColumns(filePath,Date)
     .then((extractedRows) => {
         // Output the extracted result
         console.log('Extracted Columns from Last Two Rows:', extractedRows);

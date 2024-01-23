@@ -12,6 +12,7 @@ const pool = new Pool({
     port: 5432, 
 });
 
+
 // Function to insert extracted rows into PostgreSQL
 async function insertRowsIntoPostgres(extractedRows) {
     const client = await pool.connect();
@@ -21,7 +22,7 @@ async function insertRowsIntoPostgres(extractedRows) {
 
         for (const row of extractedRows) {
             await client.query(`
-                INSERT INTO table1("Date", "exportDay", "exportPeak", "exportOffPeak", "importDay", "importPeak", "importOffPeak") 
+                INSERT INTO table1s("Date", "exportDay", "exportPeak", "exportOffPeak", "importDay", "importPeak", "importOffPeak") 
                 VALUES($1, $2, $3, $4, $5, $6, $7)
             `, [row.Date, row.exportDay, row.exportPeak, row.exportOffPeak, row.importDay, row.importPeak, row.importOffPeak]);
         }
@@ -37,7 +38,7 @@ async function insertRowsIntoPostgres(extractedRows) {
 
 
 // Function to read the last two rows of a CSV file and extract specific columns
-function readAndExtractColumns(filePath) {
+function readAndExtractColumns(filePath,Date) {
     const extractedRows = [];
 
     return new Promise((resolve, reject) => {
@@ -53,11 +54,15 @@ function readAndExtractColumns(filePath) {
                     importPeak: Math.round(row['_8'] / 1000),
                     importOffPeak: Math.round(row['_9'] / 1000),
                 };
+                
+                
+                if (extractedRow.Date !== undefined &&
+                    moment(extractedRow.Date, 'YYYY-MM-DD HH:mm:ss').isSame(Date, null, '[]')) {
+                        extractedRows.push(extractedRow);
 
-                extractedRows.push(extractedRow);
-
-                if (extractedRows.length > 2) {
-                    extractedRows.shift(); // Keep only the last two extracted rows
+                    if (extractedRows.length > 1) {
+                        extractedRows.shift(); // Keep only the last two formatted rows
+                    }
                 }
             })
             .on('end', () => {
@@ -70,11 +75,13 @@ function readAndExtractColumns(filePath) {
 }
 
 
+const Date = moment('2024-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
+
 // File path to your CSV file
 const filePath = '213213227-BH.xls';
 
 // Call the function to read the last two rows and extract specific columns
-readAndExtractColumns(filePath)
+readAndExtractColumns(filePath,Date)
     .then(async (extractedRows) => {
         // Output the extracted result
         console.log('Extracted Columns from Last Two Rows:', extractedRows);
