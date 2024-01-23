@@ -18,7 +18,7 @@ client.connect();
 async function insertRowsIntoDatabase(rows) {
   const insertQueries = rows.map(row => {
     return {
-      text: `INSERT INTO table1s("Date", "DayEnergyExport", "PeakEnergyExport", "offPeakEnergyExport", "importDay", "importPeak", "importOffPeak") VALUES($1, $2, $3, $4, $5, $6, $7)`,
+      text: `INSERT INTO table1s("Date", "DayEnergyExport", "PeakEnergyExport", "offPeakEnergyExport", "PeakEnaergyImport", "PeakEnaergyImport", "offPeakEnaergyImport") VALUES($1, $2, $3, $4, $5, $6, $7)`,
       values: [
         row.Date,
         row.DayEnergyExport,
