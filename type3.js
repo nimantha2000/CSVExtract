@@ -1,72 +1,27 @@
 const fs = require('fs');
-const csv = require('csv-parser');
+const readline = require('readline');
 
-function readCSVFile(filename) {
-  const data = {
-    firstRowFirstColumn: null,
-    Export: [],
-    Import: []
-  };
+function readTabSeparatedCSV(filename) {
+  const fileStream = fs.createReadStream(filename);
+  const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity
+  });
 
-  let currentRow = 0;
+  rl.on('line', (line) => {
+    // Split the line by tabs to get columns
+    const columns = line.split('\t');
 
-  fs.createReadStream(filename)
-    .pipe(csv({ separator: '\t' })) // assuming tab-separated data
-    .on('data', (row) => {
-      currentRow++;
+    // Print the value from the first column
+    const firstColumnValue = columns[0];
+    console.log(firstColumnValue);
+  });
 
-      // Check for the specific row and column to identify the date
-      if (currentRow === 1 && row[Object.keys(row)[0]]) {
-        // Assuming the value is like "TOU Registers: 1/1/2024 00:00"
-        const dateValue = row[Object.keys(row)[0]];
-        const dateParts = dateValue.split(' ')[1].split(' ');
-        data.dateIdentifier = dateParts[0];
-      }
-
-      if (currentRow === 2) {
-        data.Export.push({
-          label: 'Day Energy Export',
-          value: row[Object.keys(row)[1]] * 1000
-        });
-        data.Export.push({
-          label: 'Peak Energy Export',
-          value: row[Object.keys(row)[2]] * 1000
-        });
-        data.Export.push({
-          label: 'Off Peak Energy Export',
-          value: row[Object.keys(row)[3]] * 1000
-        });
-      }
-
-      if (currentRow === 3) {
-        data.Import.push({
-          label: 'Day Energy Import',
-          value: row[Object.keys(row)[1]] * 1000
-        });
-        data.Import.push({
-          label: 'Peak Energy Import',
-          value: row[Object.keys(row)[2]] * 1000
-        });
-        data.Import.push({
-          label: 'Off Peak Energy Import',
-          value: row[Object.keys(row)[3]] * 1000
-        });
-      }
-    })
-    .on('end', () => {
-        console.log('Date Identifier:', data.dateIdentifier);
-        data.Export.forEach(column => {
-            console.log(`${column.label}: ${column.value}`);
-      });
-      data.Import.forEach(column => {
-        console.log(`${column.label}: ${column.value}`);
-      });
-    })
-    .on('error', (error) => {
-      console.error('Error:', error.message);
-    });
+  rl.on('close', () => {
+    console.log('File read successfully.');
+  });
 }
 
 // Usage
-const filename = 'CW018360-HTOU.XLS';
-readCSVFile(filename);
+const filename = 'your_file.csv'; // Replace with your actual file name
+readTabSeparatedCSV(filename);

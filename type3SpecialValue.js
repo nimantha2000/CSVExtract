@@ -1,52 +1,45 @@
-Not Working yet
-
-
 const fs = require('fs');
-const csv = require('csv-parser');
-const moment = require('moment');
+const readline = require('readline');
 
-// Function to search for a specific date and time in a CSV file
-function searchCSVFile(filePath, targetDate) {
-    return new Promise((resolve, reject) => {
-        const result = [];
+function searchByDateTime(filename, targetDateTime) {
+  let totalExport = 0;
+  let totalImport = 0;
 
-        fs.createReadStream(filePath)
-            .pipe(csv({ separator: '\t' })) // Use tab as the separator based on your CSV file format
-            .on('data', (row) => {
-                // Assuming the date and time are in the "Timestamp" column and formatted as "MM/DD/YYYY HH:mm"
-                const rowDate = moment(row['Timestamp'], 'MM/DD/YYYY HH:mm', true);
+  const fileStream = fs.createReadStream(filename);
+  const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity
+  });
 
-                console.log('Row Date:', rowDate.format('MM/DD/YYYY HH:mm')); // Debugging line
+  rl.on('line', (line) => {
+    // Split the line by tabs to get columns
+    const columns = line.split('\t');
 
-                if (rowDate.isValid() && rowDate.isSame(targetDate, 'minute')) {
-                    result.push(row);
-                }
-            })
-            .on('end', () => {
-                resolve(result);
-            })
-            .on('error', (error) => {
-                reject(error);
-            });
-    });
+    // Check if the first column contains the target date and time
+    const firstColumnValue = columns[0];
+    if (firstColumnValue.includes(targetDateTime)) {
+      // Extract and classify the value in columns[13]
+      const value13 = parseFloat(columns[13]);
+
+      if (!isNaN(value13)) {
+        if (value13 > 0) {
+          totalExport += value13;
+          console.log(firstColumnValue, '\tExport:', value13.toFixed(3), '\tImport: 0.000');
+        } else if (value13 < 0) {
+          totalImport += Math.abs(value13);
+          console.log(firstColumnValue, '\tExport: 0.000', '\tImport:', Math.abs(value13).toFixed(3));
+        } else {
+          console.log(firstColumnValue, '\tExport: 0.000', '\tImport: 0.000');
+        }
+      } else {
+        console.log(firstColumnValue, '\tInvalid Value in Column 13');
+      }
+    }
+  });
+
 }
 
 // Usage
-const targetDate = moment('12/21/2023 00:00', 'MM/DD/YYYY HH:mm', true);
-const filePath = 'CW018360-LP 01.XLS'; // Replace with the actual CSV file path
-
-searchCSVFile(filePath, targetDate)
-    .then((result) => {
-        console.log('Target Date:', targetDate.format('MM/DD/YYYY HH:mm')); // Debugging line
-        if (result.length > 0) {
-            console.log('Matching Row Data:');
-            result.forEach(row => {
-                console.log(row);
-            });
-        } else {
-            console.log('No matching rows found.');
-        }
-    })
-    .catch((error) => {
-        console.error('Error searching CSV file:', error.message);
-    });
+const filename = 'CW018360-LP 01.XLS'; 
+const targetDateTime = '12/21/2023 18:30'; // (- )vlues- 12/21/2023 18:15
+searchByDateTime(filename, targetDateTime);
