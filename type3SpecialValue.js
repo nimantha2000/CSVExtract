@@ -41,5 +41,5 @@ function searchByDateTime(filename, targetDateTime) {
 
 // Usage
 const filename = 'CW018360-LP 01.XLS'; 
-const targetDateTime = '12/21/2023 18:30'; // (- )vlues- 12/21/2023 18:15
+const targetDateTime = '12/21/2023 18:30'; // (-)vlues- 12/21/2023 18:15
 searchByDateTime(filename, targetDateTime);
