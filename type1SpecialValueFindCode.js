@@ -24,8 +24,9 @@ function readFormatAndFilterByDateRange(filePath, Date) {
                     if (parsedDate.isValid()) {
                         formattedRow = {
                             Date: parsedDate.format('YYYY-MM-DD HH:mm:ss'),
-                            importValue,
                             exportValue,
+                            importValue,
+                            
                         };
                         break;
                     }
@@ -54,8 +55,8 @@ const filePath = '213213227-LP 01.xls';
 // Call the function to read the last two rows, format specific columns, and filter by date range
 readFormatAndFilterByDateRange(filePath, Date)
     .then((filteredRows) => {
-        // Output the formatted and filtered result
-        console.log('Filtered Rows:', filteredRows);
+        // Output the formatted and filtered result in JSON format
+        console.log(JSON.stringify(filteredRows, null, 2));
     })
     .catch((error) => {
         console.error('Error reading, formatting, and filtering rows:', error.message);

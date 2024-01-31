@@ -24,6 +24,16 @@ function readRowsFromExcel(fileName) {
   // Column index to read (third column)
   const columnToRead = 2; // 0-indexed
 
+  // Get the date from the 5th row's first column
+  const dateCell = sheet[XLSX.utils.encode_cell({ r: 4, c: 0 })];
+  const dateCellValue = getCellValue(dateCell);
+
+  // Initialize data object
+  const data = {
+    Date: dateCellValue,
+    Rows: {}
+  };
+
   // Iterate through specified rows
   for (let i = 0; i < rowsToRead.length; i++) {
     const rowNumber = rowsToRead[i];
@@ -41,9 +51,12 @@ function readRowsFromExcel(fileName) {
     // Get the name for the current row
     const rowName = rowNames[i];
 
-    // Print the name and cell value
-    console.log(`${rowName}: ${cellValue}`);
+    // Store the data in the object
+    data.Rows[rowName] = cellValue;
   }
+
+  // Output the data in JSON format
+  console.log(JSON.stringify(data, null, 2));
 }
 
 // Usage

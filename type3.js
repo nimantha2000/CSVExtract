@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 
 function readCSVFile(filename) {
   const data = {
-    firstRowFirstColumn: null,
+    Date: null,
     Export: [],
     Import: []
   };
@@ -15,12 +15,10 @@ function readCSVFile(filename) {
     .on('data', (row) => {
       currentRow++;
 
-      // Check for the specific row and column to identify the date
-      if (currentRow === 1 && row[Object.keys(row)[0]]) {
+      if (currentRow === 1) {
         // Assuming the value is like "TOU Registers: 1/1/2024 00:00"
         const dateValue = row[Object.keys(row)[0]];
-        const dateParts = dateValue.split(' ')[1].split(' ');
-        data.dateIdentifier = dateParts[0];
+        data.Date = dateValue.split(': ')[1];
       }
 
       if (currentRow === 2) {
@@ -54,13 +52,8 @@ function readCSVFile(filename) {
       }
     })
     .on('end', () => {
-        console.log('Date Identifier:', data.dateIdentifier);
-        data.Export.forEach(column => {
-            console.log(`${column.label}: ${column.value}`);
-      });
-      data.Import.forEach(column => {
-        console.log(`${column.label}: ${column.value}`);
-      });
+        // Output the data in JSON format, including the Date
+        console.log(JSON.stringify(data, null, 2));
     })
     .on('error', (error) => {
       console.error('Error:', error.message);

@@ -17,7 +17,6 @@ function readFormatAndFilterByDateRange(filePath, targetDate) {
                     const parsedDate = moment(row['_1'], dateFormat, true);
                     if (parsedDate.isValid()) {
                         formattedRow = {
-                            RecodNo: row['_0'], 
                             Date: parsedDate.format('YYYY-MM-DD HH:mm:ss'),
                             DayEnergyExport: Math.round(row['_3'] / 1000),
                             PeakEnergyExport: Math.round(row['_4'] / 1000),

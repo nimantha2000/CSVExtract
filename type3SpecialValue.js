@@ -2,8 +2,7 @@ const fs = require('fs');
 const readline = require('readline');
 
 function searchByDateTime(filename, targetDateTime) {
-  let totalExport = 0;
-  let totalImport = 0;
+  let matchedData = [];
 
   const fileStream = fs.createReadStream(filename);
   const rl = readline.createInterface({
@@ -22,24 +21,31 @@ function searchByDateTime(filename, targetDateTime) {
       const value13 = parseFloat(columns[13]);
 
       if (!isNaN(value13)) {
-        if (value13 > 0) {
-          totalExport += value13;
-          console.log(firstColumnValue, '\tExport:', value13.toFixed(3), '\tImport: 0.000');
-        } else if (value13 < 0) {
-          totalImport += Math.abs(value13);
-          console.log(firstColumnValue, '\tExport: 0.000', '\tImport:', Math.abs(value13).toFixed(3));
-        } else {
-          console.log(firstColumnValue, '\tExport: 0.000', '\tImport: 0.000');
-        }
+        const result = {
+          DateTime: firstColumnValue,
+          Export: value13 > 0 ? value13.toFixed(3) : '0.000',
+          Import: value13 < 0 ? Math.abs(value13).toFixed(3) : '0.000',
+        };
+
+        matchedData.push(result);
       } else {
-        console.log(firstColumnValue, '\tInvalid Value in Column 13');
+        const result = {
+          DateTime: firstColumnValue,
+          Error: 'Invalid Value in Column 13',
+        };
+
+        matchedData.push(result);
       }
     }
   });
 
+  rl.on('close', () => {
+    // Print the matched data in JSON format
+    console.log(JSON.stringify(matchedData, null, 2));
+  });
 }
 
 // Usage
-const filename = 'CW018360-LP 01.XLS'; 
+const filename = 'CW018360-LP 01.XLS';
 const targetDateTime = '12/21/2023 18:30'; // (-)vlues- 12/21/2023 18:15
 searchByDateTime(filename, targetDateTime);

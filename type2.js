@@ -1,8 +1,8 @@
 const xlsx = require('xlsx');
 const moment = require('moment');
 
-// Function to read and print specific columns with formatted date
-function readAndPrintColumnsWithFormattedDate(fileName, rowIndexes) {
+// Function to read and format specific columns with a formatted date
+function readAndFormatColumnsWithFormattedDate(fileName, rowIndexes) {
     // Read the Excel file with the 'cellDates' and 'dateNF' options
     const workbook = xlsx.readFile(fileName, { cellDates: true, dateNF: 'M/D/YYYY H:mm' });
 
@@ -13,30 +13,50 @@ function readAndPrintColumnsWithFormattedDate(fileName, rowIndexes) {
     // Convert the sheet to an array of objects
     const data = xlsx.utils.sheet_to_json(sheet);
 
-    // Initialize variables to store column values
-    let column1Values = [];
-    let column3Values = [];
-    let column4Values = [];
+    // Extract date and time from the specified column (8th row, 2nd column)
+    const dateTime = moment(data[rowIndexes[0] - 1]['__EMPTY_1'], 'M/D/YYYY H:mm').format('YYYY-MM-DD HH:mm:ss');
 
-    // Print only specific columns (Column 1, 3, and 4) for specified rows
-    rowIndexes.forEach((rowIndex) => {
-        const row = data[rowIndex - 1];
-        if (row) {
-            // Format the date using moment library
-            const formattedDate = moment(row['__EMPTY']).format('MM/DD/YYYY HH:mm');
-            // Store column values in variables
-            column1Values.push(formattedDate);
-            column3Values.push(Number(row['__EMPTY_2']).toFixed(0)); // Format to 2 decimal places
-            column4Values.push(Number(row['__EMPTY_3']).toFixed(0)); // Format to 2 decimal places
-        } else {
-            console.log(`Row ${rowIndex} not found.`);
-        }
-    });
+    // Initialize dictionary to store combined values with labels
+    const combinedData = {
+        DateTime: dateTime,
+        Values: [
+            {
+                data: [
+                    {
+                        label: 'DayEnergyExport',
+                        value: Number(data[rowIndexes[0] - 1]['__EMPTY_3']).toFixed(0),
+                    },
+                    {
+                        label: 'PeakEnergyExport',
+                        value: Number(data[rowIndexes[1] - 1]['__EMPTY_3']).toFixed(0),
+                    },
+                    {
+                        label: 'OffPeakEnergyExport',
+                        value: Number(data[rowIndexes[2] - 1]['__EMPTY_3']).toFixed(0),
+                    },
+                ],
+            },
+            {
+                data: [
+                    {
+                        label: 'DayEnergyImport',
+                        value: Number(data[rowIndexes[0] - 1]['__EMPTY_2']).toFixed(0),
+                    },
+                    {
+                        label: 'PeakEnergyImport',
+                        value: Number(data[rowIndexes[1] - 1]['__EMPTY_2']).toFixed(0),
+                    },
+                    {
+                        label: 'OffPeakEnergy Import',
+                        value: Number(data[rowIndexes[2] - 1]['__EMPTY_2']).toFixed(0),
+                    },
+                ],
+            },
+        ],
+    };
 
-    // Print the stored values
-    console.log("Date:", column1Values);
-    console.log("Export Values:", column4Values);
-    console.log("Import Values:", column3Values);
+    // Output the combined data in JSON format
+    console.log(JSON.stringify(combinedData, null, 2));
 }
 
 // Get the file name and row indexes from the command line arguments
@@ -50,4 +70,4 @@ if (!fileName || rowIndexes.length === 0) {
 }
 
 // Call the function with the provided file name and row indexes
-readAndPrintColumnsWithFormattedDate(fileName, rowIndexes);
+readAndFormatColumnsWithFormattedDate(fileName, rowIndexes);

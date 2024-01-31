@@ -1,7 +1,7 @@
 const xlsx = require('xlsx');
 
-// Function to read and print specific columns from an Excel file
-function readAndPrintColumns(fileName, targetDateTime) {
+// Function to read and return specific columns from an Excel file as JSON
+function readAndReturnColumns(fileName, targetDateTime) {
     // Read the Excel file
     const workbook = xlsx.readFile(fileName);
 
@@ -22,7 +22,7 @@ function readAndPrintColumns(fileName, targetDateTime) {
         return formattedDate === targetDateTime;
     });
 
-    // Print the found row with kW value divided by 1000 and rounded to 3 decimal places
+    // Prepare the result in JSON format
     if (targetRow) {
         const kWValue = parseFloat(targetRow[kWIndex]) / 1000;
         const roundedKWValue = Math.round(kWValue * 1000) / 1000; // Round to 3 decimal places
@@ -30,9 +30,10 @@ function readAndPrintColumns(fileName, targetDateTime) {
             'Date and Time': xlsx.SSF.format('yyyy-MM-dd hh:mm:ss', targetRow[sipEndDateIndex]),
             kW: roundedKWValue,
         };
-        console.log('Found Row:', result);
+
+        return result;
     } else {
-        console.log('Row not found with the specified date and time.');
+        return { error: 'Row not found with the specified date and time.' };
     }
 }
 
@@ -47,4 +48,7 @@ if (!fileName || !targetDateTime) {
 }
 
 // Call the function with the provided file name and target date
-readAndPrintColumns(fileName, targetDateTime);
+const result = readAndReturnColumns(fileName, targetDateTime);
+
+// Print the result in JSON format
+console.log(JSON.stringify(result, null, 2));
