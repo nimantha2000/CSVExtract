@@ -1,7 +1,7 @@
 const fs = require('fs');
 const readline = require('readline');
 
-function printRowsColumns(fileName) {
+function readData(fileName) {
   const filePath = fileName;
 
   const stream = fs.createReadStream(filePath, { encoding: 'utf8' });
@@ -62,4 +62,4 @@ if (!fileName) {
 }
 
 // Call the function with the provided file name
-printRowsColumns(fileName);
+readData(fileName);

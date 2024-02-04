@@ -2,7 +2,7 @@ const XLSX = require('xlsx');
 const path = require('path');
 
 // Function to read specified rows from an Excel file
-function readRowsFromExcel(fileName) {
+function readData(fileName) {
   const filePath = path.join(fileName);
 
   // Load the Excel workbook
@@ -61,4 +61,4 @@ function readRowsFromExcel(fileName) {
 
 // Usage
 const fileName = 'ACE8000 850_2.2_37000144_EOB.xlsx'; // Replace with your actual file name
-readRowsFromExcel(fileName);
+readData(fileName);

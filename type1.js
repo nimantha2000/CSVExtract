@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 const moment = require('moment');
 
 // Function to read, format, and filter rows from a CSV file
-function readFormatAndFilterByDateRange(filePath, targetDate) {
+function readData(filePath, targetDate) {
     const formattedRows = [];
 
     return new Promise((resolve, reject) => {
@@ -50,9 +50,9 @@ const targetDate = moment('2024-01-01 00:00:00', 'YYYY-MM-DD HH:mm:ss');
 
 // File path to your CSV file  213213219-BH.xls/213213227-BH 01.xls
 const filePath = '213213219-BH.xls';
-
+//Files - 213213219-BH.xls, 213213218-BH.xls
 // Call the function to read, format, and filter rows
-readFormatAndFilterByDateRange(filePath, targetDate)
+readData(filePath, targetDate)
     .then((formattedRows) => {
         console.log('Formatted and Filtered Rows:', formattedRows);
     })

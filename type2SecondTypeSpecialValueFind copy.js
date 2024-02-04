@@ -1,7 +1,7 @@
 const xlsx = require('xlsx');
 
 // Function to read and return specific columns from an Excel file as JSON
-function readAndReturnColumns(fileName, targetDateTime) {
+function cPeak(fileName, targetDateTime) {
     // Read the Excel file
     const workbook = xlsx.readFile(fileName);
 
@@ -25,21 +25,30 @@ function readAndReturnColumns(fileName, targetDateTime) {
     // Prepare the result in JSON format
     if (targetRow) {
         const kWValue = parseFloat(targetRow[kWIndex]) / 1000;
-        const roundedKWValue = Math.round(kWValue * 1000) / 1000; // Round to 3 decimal places
+        let exportValue, importValue;
+    
+        if (kWValue < 0) {
+            importValue = Math.abs(kWValue).toFixed(3);
+            exportValue = "0.000";
+        } else {
+            exportValue = kWValue.toFixed(3);
+            importValue = "0.000";
+        }
+    
         const result = {
             'Date and Time': xlsx.SSF.format('yyyy-MM-dd hh:mm:ss', targetRow[sipEndDateIndex]),
-            kW: roundedKWValue,
+            'Export Value': exportValue,
+            'Import Value': importValue,
         };
-
+    
         return result;
     } else {
         return { error: 'Row not found with the specified date and time.' };
     }
 }
-
 // Get the file name and target date and time from the command line arguments
-const fileName = 'WP010903-LP 01.xls';
-const targetDateTime = "2023-12-21 18:30:00";
+const fileName = '   ';
+const targetDateTime = "2023-12-21 18:30:00"; 
 
 // Check if both file name and target date are provided
 if (!fileName || !targetDateTime) {
@@ -48,7 +57,7 @@ if (!fileName || !targetDateTime) {
 }
 
 // Call the function with the provided file name and target date
-const result = readAndReturnColumns(fileName, targetDateTime);
+const result = cPeak(fileName, targetDateTime);
 
 // Print the result in JSON format
 console.log(JSON.stringify(result, null, 2));

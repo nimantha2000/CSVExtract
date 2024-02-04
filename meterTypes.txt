@@ -1,24 +1,134 @@
-Trincomalee(Type 1) 1st Fromat
-213213219-BH.xls
-Meter - EDMI Mk6E
+EDMI Mk6E(Type 1) - Trincomalee
+
+        Formatted and Filtered Rows: [     
+        {
+            Date: '2024-01-01 00:00:00',   
+            DayEnergyExport: 429337316,    
+            PeakEnergyExport: 156361135,   
+            offPeakEnergyExport: 227495257,
+            DayEnergyImport: 16408,        
+            PeakEnergyImport: 1413,        
+            offPeakEnergyImport: 19781     
+        }
+        ]
+
+        [
+        {
+            "Date": "2023-12-21 18:30:00",
+            "exportValue": 9.372,
+            "importValue": 0
+        }
+        ]
+
+CEWE Prometer 100  (direction interchanged)- (Type 2 Interchanged)-Biyagama
+{
+  "DateTime": "2024-01-01 00:00:00",     
+  "Values": [
+    {
+      "data": [
+        {
+          "label": "DayEnergyExport",    
+          "value": "50524703"
+        },
+        {
+          "label": "PeakEnergyExport",   
+          "value": "16694272"
+        },
+        {
+          "label": "OffPeakEnergyExport",
+          "value": "23227539"
+        }
+      ]
+    },
+    {
+      "data": [
+        {
+          "label": "DayEnergyImport",
+          "value": "7133"
+        },
+        {
+          "label": "PeakEnergyImport",
+          "value": "876"
+        },
+        {
+          "label": "OffPeakEnergy Import",
+          "value": "656"
+        }
+      ]
+    }
+  ]
+}
+
+{
+  "Date and Time": "2023-12-21 18:30:00",
+  "Export Value": "5.731",
+  "Import Value": "0.000"
+}
 
 
-Thulhiriya  (Type 1) 2nd format
-213213227-BH.xls
-Meter - EDMI Mk6E
+CEWE Prometer 100 (Type 2 second Type)
+
+CEWE Prometer (type 3) - Kegalle
+
+{
+  "Date": "1/1/2024 00:00",
+  "exportValues": [        
+    {
+      "values": [
+        {
+          "Day": "73464950"
+        },
+        {
+          "Peak": "27659428"
+        },
+          "off Peak": "25552983"
+        }
+      ]
+    }
+  ],
+  "importValues": [
+    {
+      "values": [
+        {
+          "Day": "1573"
+        },
+        {
+          "Peak": "326"
+        },
+        {
+          "off Peak": "1034"
+        }
+      ]
+    }
+  ]
+}
+
+[
+  {
+    "DateTime": "12/21/2023 18:30",
+    "Export": "3.861",
+    "Import": "0.000"
+  }
+]
+
+Actaris ACE8000 (type 4)
+
+{
+  "Date": "Monday, January 1, 2024 00:00:00",
+  "Rows": {
+    "DayEnergyExport": "127945888 kWh",      
+    "PeakEnergyExport": "17856397 kWh",      
+    "OffPeakEnergyExport": "54915580 kWh",   
+    "DayEnergyImport": "10150 kWh",
+    "PeakEnergyImport": "76 kWh",
+    "OffPeakEnergyImport": "1 kWh"
+  }
+}
+{
+  "Time": "6:30 PM",
+  "Export": "4.971",
+  "Import": "0.000" 
+}
 
 
-
-Biyagama (Type 2)
-Meter - CEWE Prometer 100
-
-
-
-
-Kegalle (Type 3)
-Meter - CEWE Prometer
-
-
-
-Pannala (Type 4)
-Meter - Actaris ACE8000
+Elster 1800
